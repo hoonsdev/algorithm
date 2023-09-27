@@ -4,18 +4,19 @@ function solution(input) {
   const T = parseInt(input[0]);
   for (i = 0; i < T; i++) {
     let [a, b] = input[i + 1].split(' ').map((el) => parseInt(el));
+    // 내가 처음 쓴 코드
     // 마지막 한자리 초기값 설정
-    let last = a % 10;
+    //let last = a % 10;
     // 이미 처음에 a^0 가 설정된 셈이니까, 1부터 루프를 돌아 b-1번 반복 => 최종에서는 들어가는 last가 a^b-1 의 나머지
     // 최종에서는 a 곱해주고 나머지를 구하니까 결국 a^b의 나머지 구하는 셈이다
-    for (j = 1; j < b; j++) {
-      last = last * a;
-      last = last % 10;
-    }
+    //for (j = 1; j < b; j++) {
+    //  last = last * a;
+    //  last = last % 10;
+    //}
+    let last = a ** (b % 4 || 4) % 10;
     // 총 데이터 수를 10으로 나눈 나머지가 마지막 데이터가 처리될 컴퓨터의 번호
     console.log(last === 0 ? 10 : last);
   }
-  // console.log(input);
 }
 
 // Readline module
