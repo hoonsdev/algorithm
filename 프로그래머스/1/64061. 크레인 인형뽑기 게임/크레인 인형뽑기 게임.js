@@ -6,11 +6,10 @@ function solution(board, moves) {
       if (board[j][moves[i] - 1]) {
         if (board[j][moves[i] - 1] === stack[stack.length - 1]) {
           answer += 2;
-          board[j][moves[i] - 1] = 0;
           stack.pop();
-          break;
+        } else {
+          stack.push(board[j][moves[i] - 1]);
         }
-        stack.push(board[j][moves[i] - 1]);
         board[j][moves[i] - 1] = 0;
         break;
       }
