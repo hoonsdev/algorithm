@@ -1,116 +1,69 @@
 function solution(maps) {
-  const direction = [
-    [1, 0], // 위
-    [-1, 0], // 아래
-    [0, 1], // 우
-    [0, -1], // 좌
+  let answer;
+  // 맵 가로, 세로 길이
+  const n = maps.length;
+  const m = maps[0].length;
+
+  // 방향
+  let dir = [
+    [-1, 0],
+    [0, 1],
+    [1, 0],
+    [0, -1],
   ];
 
-  const rows = maps.length;
-  const cols = maps[0].length;
-  // let count = 0;
+  // 이중 배열로 만들기
+  const matrix = [];
+  maps.map((row) => {
+    matrix.push(row.split(''));
+  });
 
-  let visited = Array.from({ length: rows }, () => Array(cols).fill(false));
+  // 시작점 위치 찾기
+  let start;
+  matrix.forEach((row, rowIdx) => {
+    if (row.indexOf('S') !== -1) start = [rowIdx, row.indexOf('S')];
+  });
 
-  // BFS; 큐가 빌 때까지 실행한다.
-  function findStart() {
-    // 시작 노드 찾기
-    const queue = [];
+  // 방문한 지점 체크하는 이차원 배열 -> 시작 지점을 방문한 걸로 처리
+  let visited = Array.from({ length: n }, () => new Array(m).fill(0));
+  visited[start[0]][start[1]] = 1;
 
-    for (let row = 0; row < rows; row++) {
-      for (let col = 0; col < cols; col++) {
-        if (maps[row][col] === 'S') {
-          queue.push({ row, col, answer: 0 });
+  // 시작점을 방문해야하는 큐에 추가 (x, y, 누적 시간)
+  let queue = [[start[0], start[1], 0, false]];
 
-          return queue[0];
-        }
-      }
+  // 상하좌우 탐색
+  while (queue.length) {
+    // 큐에서 하나 빼와서 그 점을 현재 위치로 지정
+    let [cx, cy, time, isOpen] = queue.shift();
+    // 현재 지점이 레버 위치일 때
+    if (matrix[cx][cy] === 'L') {
+      isOpen = true;
+      visited = Array.from({ length: n }, () => new Array(m).fill(0));
+      visited[cx][cy] = 1;
+      queue = [];
     }
-
-    return null;
+    // 현재 지점이 출구 위치일 때
+    if (matrix[cx][cy] === 'E' && isOpen) {
+      answer = time;
+      break;
+    }
+    // 둘다 해당 x -> 일반적인 상황 ... 다음 위치 예측하기
+    for (let i = 0; i < dir.length; i++) {
+      let nx = cx + dir[i][0];
+      let ny = cy + dir[i][1];
+      // 다음 지점이 맵 밖으로 벗어날 때
+      if (nx < 0 || ny < 0 || nx >= n || ny >= m) {
+        continue;
+      }
+      // 다음 지점이 X 거나 이미 방문한 위치일 때
+      if (matrix[nx][ny] === 'X' || visited[nx][ny] === 1) {
+        continue;
+      }
+      // 다음 지점을 현재 지점으로 설정 후 방문한 것으로 표시
+      queue.push([nx, ny, time + 1, isOpen]);
+      visited[nx][ny] = 1;
+    }
   }
 
-  function findLever() {
-    const queue = [findStart()];
-    // console.log('ququs', queue);
-    while (queue.length > 0) {
-      // count++;
-      const current = queue.shift();
-      const { row, col, answer } = current;
-
-      if (maps[row][col] === 'L') {
-        visited = Array.from({ length: rows }, () => Array(cols).fill(false));
-        visited[row][col] = true;
-        // 레버의 위치
-        return current;
-      }
-
-      // console.log(visited);
-      for (const [dr, dc] of direction) {
-        const newRow = row + dr;
-        const newCol = col + dc;
-
-        if (
-          newRow >= 0 &&
-          newRow < rows &&
-          newCol >= 0 &&
-          newCol < cols && // 배열 끝이 아닐 조건
-          maps[newRow][newCol] !== 'X' && // 통로이고
-          !visited[newRow][newCol] // 방문한 적이 없어야 함
-        ) {
-          queue.push({ row: newRow, col: newCol, answer: answer + 1 }); // 통로를 지나갈 때마다 answer + 1
-          visited[newRow][newCol] = true; // 방문한 곳 체크
-        }
-      }
-    }
-
-    return null;
-  }
-
-  const leverLocation = findLever();
-
-  if (leverLocation === null) {
-    return -1;
-  } else {
-    function findExit() {
-      const queue = [leverLocation];
-
-      // console.log('ququ', queue);
-
-      while (queue.length > 0) {
-        // count++;
-        // console.log('$$', count);
-        const current = queue.shift();
-        const { row, col, answer } = current;
-
-        if (maps[row][col] === 'E') {
-          // 출구의 위치
-          return answer;
-        }
-
-        // console.log('저벅저벅,,,', visited);
-
-        for (const [dr, dc] of direction) {
-          const newRow = row + dr;
-          const newCol = col + dc;
-
-          if (
-            newRow >= 0 &&
-            newRow < rows &&
-            newCol >= 0 &&
-            newCol < cols && // 배열 끝이 아닐 조건
-            maps[newRow][newCol] !== 'X' && // 통로이고
-            !visited[newRow][newCol] // 방문한 적이 없어야 함
-          ) {
-            queue.push({ row: newRow, col: newCol, answer: answer + 1 });
-            visited[newRow][newCol] = true; // 방문한 곳 체크
-          }
-        }
-      }
-
-      return -1;
-    }
-
-    return findExit();
-  }
+  return answer ? answer : -1;
 }
