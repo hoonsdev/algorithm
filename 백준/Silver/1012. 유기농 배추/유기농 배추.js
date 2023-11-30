@@ -20,28 +20,36 @@ function solution(input) {
           const nx = cx + dir[i][0];
           const ny = cy + dir[i][1];
 
-          if (nx >= 0 && nx < M && ny >= 0 && ny < N) {
-            if (map[ny][nx] === 1 && !visited[ny][nx]) {
-              queue.push([nx, ny]);
-              visited[ny][nx] = 1;
-            }
+          if (
+            nx >= 0 &&
+            nx < M &&
+            ny >= 0 &&
+            ny < N &&
+            map[ny][nx] === 1 &&
+            !visited[ny][nx]
+          ) {
+            queue.push([nx, ny]);
+            visited[ny][nx] = 1;
           }
         }
       }
     };
 
+    // 정답 초기화
     let answer = 0;
     const [M, N, K] = input
       .shift()
       .split(' ')
       .map((el) => parseInt(el));
+
+    // map 생성
     const map = Array.from({ length: N }, () => new Array(M).fill(0));
     for (let i = 0; i < K; i++) {
       const [x, y] = input.shift().split(' ');
       map[y][x] = 1;
     }
 
-    // 방문한 곳 체크
+    // 방문한 곳 체크 배열
     const visited = Array.from({ length: N }, () => new Array(M).fill(0));
 
     // 탐색
