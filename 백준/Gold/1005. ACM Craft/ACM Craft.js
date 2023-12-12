@@ -1,73 +1,79 @@
-var fs = require("fs")
+// 입력 문제로 인해서 계속 시간초과가 떠서, java로 변환해서 제출했더니 성공..!!
+// 로직은 이게 틀리지 않은거 같아서 덮어쓰기 합니다!
+// 문제 풀이
+function solution(input) {
+  const T = +input.shift();
+  for (let i = 0; i < T; i++) {
+    // 위상정렬
+    const topologySort = (target) => {
+      // 큐
+      let queue = [];
 
-// 줄바꿈으로 구분
-const stdin = fs.readFileSync('/dev/stdin').toString().split('\n');
+      // 선행 없으면 큐에 삽입 -> 시작점 설정
+      for (let j = 1; j <= N; j++) {
+        if (inDeg[j] === 0) queue.push(j);
+      }
 
+      // 큐 빌때까지 반복
+      while (queue.length) {
+        const cur = queue.shift();
+        if (cur === target) {
+          return dp[target];
+        }
 
-let caseNum = stdin[0];
-let caseAry = [];
-let curIdx = 1;
+        for (let j = 0; j < graph[cur].length; j++) {
+          let next = graph[cur][j];
 
-while(caseNum > 0){
-    let temp = {};
-    temp.infoAry = stdin[curIdx].split(" ").map(Number);
-    temp.buildTimes = stdin[curIdx+1].split(" ").map(Number);
-    temp.buildTimes.unshift(0);
-    let edges = []
-    for(let j = 0; j < temp.infoAry[1]; j++){
-        edges[j] = stdin[curIdx+2+j].split(" ").map(Number);
+          // 다른 경로로 설정된 다음 건설 시간 : dp[next]
+          // 내 기준으로 다음 빌딩 건설시간을 더했을 때 dp[next] 보다 크면 업데이트하기
+          if (dp[next] < dp[cur] + build[next]) {
+            dp[next] = dp[cur] + build[next];
+          }
+
+          // 진입차수 한 개 빼주기
+          inDeg[next]--;
+
+          if (!inDeg[next]) queue.push(next);
+        }
+      }
+      return 0;
+    };
+
+    let [N, K] = input.shift().split(' ').map(Number);
+    // 건설 시간 배열
+    let build = [0, ...input.shift().split(' ').map(Number)];
+    // dp -> 변경사항 업데이트 해주는 배열
+    let dp = [...build];
+    // 위상정렬: 각 노드에 대한 진입차수 저장 배열
+    let inDeg = new Array(N + 1).fill(0);
+    // 연결 관계를 나타내주는 graph
+    let graph = Array.from({ length: N + 1 }, () => []);
+    // 진입차수 및 노드, 간선 관계 설정
+    for (let j = 0; j < K; j++) {
+      let [s, e] = input.shift().split(' ').map(Number);
+      inDeg[e]++;
+      graph[s].push(e);
     }
-    temp.edges = edges;
-    temp.target = Number(stdin[curIdx+3+temp.infoAry[1]-1]);
+    let W = +input.shift();
+    let answer = topologySort(W);
 
-    caseAry.push(temp);
-    curIdx = curIdx+3+temp.infoAry[1];
-    caseNum--;
-}
-    
-
-function compTime(caseObj){
-    //시작점을 찾기위해 해당 노드가 목적지가 되는 경우를 저장한다
-    let endPointAry = new Array(caseObj.infoAry[0]+1).fill(0);
-    // 간선들을 나타낼 배열
-    let map = [];
-    for(let i = 0; i < caseObj.infoAry[0]+1; i++){
-        map.push([]);
-    }
-
-    for(let i = 0; i < caseObj.edges.length; i++){
-        map[caseObj.edges[i][0]].push([caseObj.edges[i][1]]);
-        endPointAry[caseObj.edges[i][1]]++;
-    }
-    
-    let queue = [];
-    let visited = [...caseObj.buildTimes];
-    //시작점이 될 수 있는 건물들(건설의 요구조건이 없는 건물들)
-    for(let i = 1; i < endPointAry.length; i++){
-        if(endPointAry[i] === 0) queue.push(i);
-    }
-
-    //BFS
-    while(queue.length > 0){
-        let curbuilding = queue.shift();
-
-        //현재 건물에서 다음 건물들의 배열을 전부 조회
-        map[curbuilding].forEach(nextNode => {
-            visited[nextNode] = Math.max(visited[nextNode], visited[curbuilding]+caseObj.buildTimes[nextNode]);
-            endPointAry[nextNode]--;
-
-            //건설 가능한 경우 큐에 넣는다
-            if(endPointAry[nextNode]===0) queue.push(nextNode);
-        })
-
-    }
-
-    return visited[caseObj.target];
-
+    console.log(answer);
+  }
 }
 
+const readline = require('readline');
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 
+let input = [];
 
-caseAry.forEach(obj => {
-    console.log(compTime(obj));
-})
+rl.on('line', (line) => {
+  input.push(line);
+});
+
+rl.on('close', () => {
+  solution(input);
+  process.exit();
+});
