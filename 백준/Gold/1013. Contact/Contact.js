@@ -19,6 +19,10 @@ function solution(input) {
           // 그 뒤에 0 아닐때까지 idx 증가
           while (idx < pattern.length && pattern[idx] === '0') idx++;
 
+          // 100 패턴 나오면 무조건 1 하나는 있어야 함
+          // 예를 들어 100000000 ... 이런 패턴은 false
+          // 따라서 쭉 루프를 돌고 마지막 결과가 1인지 확인하는 작업은 필요
+          // 패턴 길이보다 길어져서 pattern[idx] 가 undefined 일 때도 마찬가지로 1 아니니까 false
           if (pattern[idx] === '1') idx++;
           else return false;
 
