@@ -2,15 +2,12 @@ function solution(input) {
   const [N, D] = input.shift().split(' ').map(Number);
   const shortcut = [];
 
-  // 지름길 정보를 입력 받음
   for (let i = 0; i < N; i++) {
     shortcut.push(input.shift().split(' ').map(Number));
   }
 
-  // 지름길 정보 정렬
   shortcut.sort((a, b) => a[0] - b[0]);
 
-  // dp 배열 초기화
   const dp = Array.from({ length: D + 1 }, (_, idx) => idx);
 
   let k = 0;
