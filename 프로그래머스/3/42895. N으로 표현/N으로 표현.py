@@ -1,5 +1,4 @@
 def solution(N, number):
-    answer = 0
     dp = [[] for _ in range(9)] # dp[i] = N이 i개 있을 때 만들 수 있는 수
     
     for i in range(1, 9):
@@ -31,8 +30,3 @@ def solution(N, number):
             dp[i].extend([*num_list]) 
 
     return -1
-                    
-            
-        
-    
-    return answer
