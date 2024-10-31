@@ -1,31 +1,26 @@
-const input = require("fs")
-  .readFileSync("/dev/stdin")
-  .toString()
-  .trim()
-  .split("\n")
-  .map((str) => parseInt(str));
+const MAX_SIZE = 1_000_000;
 
-const N = +input[0]
+const input = require('fs').readFileSync(0, 'utf-8').toString().trim().split('\n').map(Number);
+let numberCount = new Array(MAX_SIZE + 1).fill(0);
+let hitCount = new Array(MAX_SIZE + 1).fill(0);
+let printer = '';
 
-const check = new Array(1000001).fill(0)
-const arr = new Array(N + 1).fill(0)
-
-for (let i = 1; i < N + 1; i++) {
-	check[input[i]] += 1
-	arr[i] = input[i]
+for (let i = 1; i < input.length; i += 1) {
+    numberCount[input[i]] += 1;
 }
 
-const div = (num, ans) => {
-	for (let idx = 1; idx * idx <= num; idx++) {
-		if (num % idx === 0) {
-			ans += idx !== num / idx ? check[num / idx] + check[idx] : check[idx]
-		}
-	}
-	
-	return ans
+for (let i = 1; i <= MAX_SIZE; i += 1) {
+    if (numberCount[i] === 0) continue;
+    
+    hitCount[i] += numberCount[i] - 1;
+
+    for (let j = i * 2; j <= MAX_SIZE; j += i) {
+        hitCount[j] += numberCount[i];
+    }
 }
 
-arr.slice(1).map(el => {
-	const answer = div(el, -1)
-	console.log(answer)
-})
+for (let i = 1; i < input.length; i += 1) {
+    printer += hitCount[input[i]] + '\n';
+}
+
+console.log(printer);
