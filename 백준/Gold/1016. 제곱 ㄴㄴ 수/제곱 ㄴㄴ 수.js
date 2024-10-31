@@ -1,21 +1,20 @@
 const solution = (input) => {
-  const [min, max] = input[0].split(' ').map(BigInt);
-  const arr = new Array(Number(max - min + 1n)).fill(0);
+  const [min, max] = input[0].split(' ').map(Number);
+  const sMax = Math.floor(max ** 0.5);
+  const arr = new Array(max - min + 1).fill(0);
   let count = 0;
 
-  for (let i = 2n; i ** 2n <= max; i++) {
-    let start = (min / i ** 2n) * i ** 2n;
-    if (start < min) start += i ** 2n;
-
-    for (let j = start; j <= max; j += i ** 2n) {
-      if (!arr[Number(j - min)]) {
-        arr[Number(j - min)] = 1;
+  // i는 제곱수 만들 숫자
+  for (let i = 2; i <= sMax + 1; i++) {
+    for (let j = Math.ceil(min / i ** 2) * i ** 2; j <= max; j += i ** 2) {
+      if (!arr[j - min]) {
+        arr[j - min] = 1;
         count++;
       }
     }
   }
 
-  console.log(Number(max - min + 1n - BigInt(count)));
+  console.log(max - min + 1 - count);
 };
 
 const readline = require('readline');
