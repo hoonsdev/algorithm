@@ -1,34 +1,27 @@
 function solution(input) {
 	const N = +input[0]
 
-	const check = Array.from({length: 1000001}, () => [])
+	const check = new Array(1000001).fill(0)
 	const arr = new Array(N + 1).fill(0)
 
 	for (let i = 1; i < N + 1; i++) {
-		check[input[i]].push(i)
-		arr[i] = input[i]
+		check[input[i]] += 1 // 해당 수가 몇개 있는지 체크
+		arr[i] = input[i] // 각 사람에 해당하는 수
+	}
+
+	const div = (num, ans) => {
+		for (let idx = 1; idx * idx <= num; idx++) {
+			if (num % idx === 0) {
+				ans += idx !== num / idx ? check[num / idx] + check[idx] : check[idx]
+			}
+		}
+		return ans
 	}
 
 	arr.slice(1).map(el => {
-		let answer = 0
-		const res = div(el)
-		for (let n of res) {
-			answer += check[n].length
-		}
-		answer -= 1
+		const answer = div(el, -1)
 		console.log(answer)
 	})
-}
-
-function div(num) {
-	let result = []
-	for (let idx = 1; idx * idx <= num; idx++) {
-		if (num % idx === 0) {
-			result.push(idx)
-			if (idx !== num / idx) result.push(num / idx)
-		}
-	}
-	return result
 }
 
 const readline = require('readline')
