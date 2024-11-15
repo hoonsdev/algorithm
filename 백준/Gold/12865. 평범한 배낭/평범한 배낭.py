@@ -1,19 +1,19 @@
-n, k = map(int, input().split())
+import sys
 
-thing = [[0,0]]
-d = [[0]*(k+1) for _ in range(n+1)]
+N, K = map(int, sys.stdin.readline().split())
+arr = [(0, 0)]
+for i in range(N):
+    W, V = map(int, sys.stdin.readline().split())
+    arr.append((W, V))
 
-for i in range(n):
-    thing.append(list(map(int, input().split())))
+dp = [[0] * (K + 1) for _ in range(N + 1)]  # dp[i][j] = 최대 무게가 i, j번째 물품까지 살펴봤을 때 최대 가치
 
-for i in range(1, n+1):
-    for j in range(1, k+1):
-        w = thing[i][0]
-        v = thing[i][1]
-
-        if j < w:
-            d[i][j] = d[i-1][j]
+for i in range(1, N + 1):
+    W, V = arr[i]
+    for j in range(1, K + 1):
+        if W > j:
+            dp[i][j] = dp[i - 1][j]  # 넣으려는 물건이 최대 무게보다 크면 넣지 않음
         else:
-            d[i][j] = max(d[i-1][j], d[i-1][j-w]+v)
+            dp[i][j] = max(dp[i - 1][j - W] + V, dp[i - 1][j])  # 넣으려는 물건을 넣는 경우, 안 넣는 경우
 
-print(d[n][k])
+print(dp[N][K])
